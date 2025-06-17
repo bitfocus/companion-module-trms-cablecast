@@ -1,6 +1,6 @@
 {
-	"id": "companion-module-trms-cablecast",
-	"name": "companion-module-trms-cablecast",
+	"id": "trms-cablecast",
+	"name": "trms-cablecast",
 	"shortname": "Cablecast",
 	"description": "Allows creating actions to control macros",
 	"version": "0.0.0",
