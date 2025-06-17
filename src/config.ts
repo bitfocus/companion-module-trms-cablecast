@@ -29,5 +29,12 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			width: 8,
 			regex: Regex.SOMETHING,
 		},
+		{
+			type: 'textinput',
+			id: 'locationId',
+			label: 'Location ID',
+			width: 8,
+			regex: Regex.SOMETHING,
+		},
 	]
 }

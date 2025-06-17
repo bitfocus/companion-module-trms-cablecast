@@ -1,7 +1,6 @@
-/* eslint-disable n/no-unsupported-features/node-builtins */
-import { InstanceBase, runEntrypoint, InstanceStatus, SomeCompanionConfigField } from '@companion-module/base'
+import { InstanceBase, InstanceStatus, runEntrypoint, SomeCompanionConfigField } from '@companion-module/base'
 import { GetConfigFields, type ModuleConfig } from './config.js'
-import { UpdateVariableDefinitions } from './variables.js'
+import { InitVariables } from './variables.js'
 import { UpgradeScripts } from './upgrades.js'
 import { UpdateActions } from './actions.js'
 import { UpdateFeedbacks } from './feedbacks.js'
@@ -17,6 +16,11 @@ export interface Macro {
 	controlRoom: number
 }
 
+export interface Device {
+	id: string
+	name: string
+}
+
 export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	controlRooms: ControlRoom[] = []
 	macros: Macro[] = []
@@ -28,22 +32,22 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 	async getControlRooms(): Promise<ControlRoom[]> {
 		try {
-			const macrosResponse = await fetch(`${this.config.host}/cablecastapi/v1/controlrooms`, {
+			const controlRoomsResponse = await fetch(`${this.config.host}/cablecastapi/v1/controlrooms`, {
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
 				},
 			})
-			if (!macrosResponse.ok) {
-				this.log('error', `Error fetching macros: ${macrosResponse.statusText}`)
+			if (!controlRoomsResponse.ok) {
+				this.log('error', `Error1 fetching controlrooms: ${controlRoomsResponse.statusText}`)
 				return []
 			}
-			const macrosData = await macrosResponse.json()
-			return macrosData.controlRooms.map((ca: { id: string; name: string }) => {
+			const controlRoomsData = (await controlRoomsResponse.json()) as { controlRooms: ControlRoom[] }
+			return controlRoomsData.controlRooms.map((ca: { id: string; name: string }) => {
 				return ca
 			})
 		} catch (e) {
-			console.error('Error fetching macros:', e)
+			console.error('Fetching controlrooms Failed:', e)
 			return []
 		}
 	}
@@ -60,12 +64,35 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				this.log('error', `Error fetching macros: ${macrosResponse.statusText}`)
 				return []
 			}
-			const macrosData = await macrosResponse.json()
+			const macrosData = (await macrosResponse.json()) as { macros: Macro[] }
 			return macrosData.macros.map((m: { id: string; name: string; controlRoom: number }) => {
 				return m
 			})
 		} catch (e) {
-			this.log('error', `Error fetching macros: ${e}`)
+			this.log('error', `Fetching macros Failed: ${e}`)
+			return []
+		}
+	}
+
+	async getDevices(): Promise<Device[]> {
+		try {
+			const devicesResponse = await fetch(`${this.config.host}/cablecastapi/v1/devices`, {
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
+				},
+			})
+			if (!devicesResponse.ok) {
+				this.log('error', `Error fetching devices: ${devicesResponse.statusText}`)
+				return []
+			}
+			const devicesData = (await devicesResponse.json()) as { devices: Device[] }
+
+			return devicesData.devices.map((d: { id: string; name: string }) => {
+				return d
+			})
+		} catch (e) {
+			this.log('error', `Fetching devices Failed: ${e}`)
 			return []
 		}
 	}
@@ -80,7 +107,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		const macros = await this.getMacros()
 		const controlRooms = await this.getControlRooms()
 
-		const macroActionChoices = macros
+		this.macros = macros
 			.map((macro) => {
 				this.log('info', `Macro - ${JSON.stringify(macro)}`)
 				this.log('info', `Control Room - ${JSON.stringify(controlRooms)}`)
@@ -92,11 +119,12 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			})
 			.sort((a, b) => a.name.localeCompare(b.name))
 
-		this.macros = macroActionChoices
+		const devices = await this.getDevices()
+		// this.log('info', `Devices - ${JSON.stringify(devices)}`)
 
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
-		this.updateVariableDefinitions() // export variable definitions
+		this.initVariables(devices) // initialize variables
 	}
 	// When module gets deleted
 	async destroy(): Promise<void> {
@@ -120,8 +148,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		UpdateFeedbacks(this)
 	}
 
-	updateVariableDefinitions(): void {
-		UpdateVariableDefinitions(this)
+	initVariables(devices: Device[]): void {
+		void InitVariables(this, devices)
 	}
 }
 
