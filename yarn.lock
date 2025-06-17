@@ -1010,9 +1010,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"companion-module-cablecast@workspace:.":
+"companion-module-trms-cablecast@workspace:.":
   version: 0.0.0-use.local
-  resolution: "companion-module-cablecast@workspace:."
+  resolution: "companion-module-trms-cablecast@workspace:."
   dependencies:
     "@companion-module/base": "npm:~1.11.2"
     "@companion-module/tools": "npm:^2.1.1"
@@ -1079,9 +1079,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.160":
-  version: 1.5.168
-  resolution: "electron-to-chromium@npm:1.5.168"
-  checksum: 10c0/4e3ca616717c22b270e04742ae77aeb7a5f7f56b40e856c1d97fcab8fb12b6ae4c406fe3d6fa28213bbe95d271f9a5e79585f33fb3930b6a0b1f076ba113d6ca
+  version: 1.5.169
+  resolution: "electron-to-chromium@npm:1.5.169"
+  checksum: 10c0/942b0fe95e05df8ae6c4a76e36a94788659927a9f7d4d718defbfff34153b98e9f9d8e028f424535a578a9775029442c1832ec681a4c0a85fdf76f3fa0360d75
   languageName: node
   linkType: hard
 
@@ -1209,8 +1209,8 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-prettier@npm:^5.2.3":
-  version: 5.4.1
-  resolution: "eslint-plugin-prettier@npm:5.4.1"
+  version: 5.5.0
+  resolution: "eslint-plugin-prettier@npm:5.5.0"
   dependencies:
     prettier-linter-helpers: "npm:^1.0.0"
     synckit: "npm:^0.11.7"
@@ -1224,7 +1224,7 @@ __metadata:
       optional: true
     eslint-config-prettier:
       optional: true
-  checksum: 10c0/bdd9e9473bf3f995521558eb5e2ee70dd4f06cb8b9a6192523cfed76511924fad31ec9af9807cd99f693dc59085e0a1db8a1d3ccc283e98ab30eb32cc7469649
+  checksum: 10c0/d739940d5f5ea9b4c3a52836b24907b273a46909cdd1def5526f8934e54082fe5aac13512eb2c27d538ca79e16916ca54c651e3372aa53b7d4297afb4c156d47
   languageName: node
   linkType: hard
 
