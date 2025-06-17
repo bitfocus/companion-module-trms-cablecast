@@ -1,12 +1,12 @@
 {
-	"id": "companion-module-cablecast-cablecast",
-	"name": "companion-module-cablecast-cablecast",
+	"id": "companion-module-trms-cablecast",
+	"name": "companion-module-trms-cablecast",
 	"shortname": "Cablecast",
 	"description": "Allows creating actions to control macros",
 	"version": "0.0.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-cablecast.git",
-	"bugs": "https://github.com/bitfocus/companion-cablecast/issues",
+	"repository": "git+https://github.com/bitfocus/companion-module-trms-cablecast.git",
+	"bugs": "https://github.com/bitfocus/companion-module-trms-cablecast/issues",
 	"maintainers": [
 		{
 			"name": "Ray Tiley",

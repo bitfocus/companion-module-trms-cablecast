@@ -1,5 +1,5 @@
 {
-	"name": "companion-module-cablecast",
+	"name": "companion-module-trms-cablecast",
 	"version": "0.1.0",
 	"main": "dist/main.js",
 	"type": "module",
@@ -16,7 +16,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/trms/companion-module-cablecast-cablecast.git"
+		"url": "git+https://github.com/bitfocus/companion-module-trms-cablecast.git"
 	},
 	"engines": {
 		"node": "^22.14",
