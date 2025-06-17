@@ -1,6 +1,6 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, SomeCompanionConfigField } from '@companion-module/base'
 import { GetConfigFields, type ModuleConfig } from './config.js'
-import { InitVariables } from './variables.js'
+import { UpdateVariables } from './variables.js'
 import { UpgradeScripts } from './upgrades.js'
 import { UpdateActions } from './actions.js'
 import { UpdateFeedbacks } from './feedbacks.js'
@@ -24,6 +24,8 @@ export interface Device {
 export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	controlRooms: ControlRoom[] = []
 	macros: Macro[] = []
+	devices: Device[] = []
+	timeout: NodeJS.Timeout | null = null // For polling
 	config!: ModuleConfig // Setup in init()
 
 	constructor(internal: unknown) {
@@ -100,12 +102,15 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	async init(config: ModuleConfig): Promise<void> {
 		this.controlRooms = []
 		this.macros = []
+		this.devices = []
 		this.config = config
 
 		await this.reload()
 	}
 
 	async reload(): Promise<void> {
+		this.timeout?.close()
+
 		if (!this.config.host || !this.config.username || !this.config.password) {
 			this.log('warn', 'Module not configured')
 			this.updateStatus(InstanceStatus.Disconnected)
@@ -128,12 +133,15 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				})
 				.sort((a, b) => a.name.localeCompare(b.name))
 
-			const devices = await this.getDevices()
-			// this.log('info', `Devices - ${JSON.stringify(devices)}`)
+			this.devices = await this.getDevices()
 
 			this.updateActions() // export actions
 			this.updateFeedbacks() // export feedbacks
-			await this.initVariables(devices) // initialize variables
+			await this.updateVariables() // initialize variables
+
+			this.timeout = setTimeout(() => {
+				this.pollVariables()
+			}, 1000)
 
 			this.updateStatus(InstanceStatus.Ok)
 		} catch (error) {
@@ -165,12 +173,27 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		UpdateFeedbacks(this)
 	}
 
-	async initVariables(devices: Device[]): Promise<void> {
+	async updateVariables(): Promise<void> {
 		try {
-			return InitVariables(this, devices)
+			return UpdateVariables(this)
 		} catch (e) {
-			this.log('error', `Error initializing variables: ${e}`)
+			this.log('error', `Error updating variables: ${e}`)
 		}
+	}
+
+	pollVariables(): void {
+		this.updateVariables()
+			.then(() => {
+				this.log('info', 'Variables updated')
+			})
+			.catch((error) => {
+				this.log('error', `Error updating variables: ${error}`)
+			})
+			.finally(() => {
+				this.timeout = setTimeout(() => {
+					this.pollVariables()
+				}, 1000)
+			})
 	}
 }
 
