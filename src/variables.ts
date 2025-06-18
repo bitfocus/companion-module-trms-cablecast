@@ -1,11 +1,11 @@
 import type { CompanionVariableDefinition, CompanionVariableValues } from '@companion-module/base'
-import type { ModuleInstance, Device } from './main.js'
+import type { ModuleInstance } from './main.js'
 
-export async function InitVariables(self: ModuleInstance, devices: Device[]): Promise<void> {
+export async function UpdateVariables(self: ModuleInstance): Promise<void> {
 	const variableDefinitions: CompanionVariableDefinition[] = []
 	const variableValues: CompanionVariableValues = {}
 
-	for (const device of devices) {
+	for (const device of self.devices) {
 		variableDefinitions.push({
 			name: `Device State: ${device.name}`,
 			variableId: `device_state_${device.id}`,
@@ -44,7 +44,7 @@ export async function InitVariables(self: ModuleInstance, devices: Device[]): Pr
 	const automationStatus = await getAutomationStatus.call(self)
 	// self.log('info', `AutomationStatus DeviceStatus - ${JSON.stringify(automationStatus.deviceStatus)}`)
 	for (const deviceStatus of automationStatus.deviceStatus) {
-		const device = devices.find((d) => d.id === deviceStatus.id)
+		const device = self.devices.find((d) => d.id === deviceStatus.id)
 		if (device) {
 			variableValues[`device_state_${device.id}`] = deviceStatus.action
 			// Technically this is the postion in seconds for a playing file. The frameRate will be set to 1
@@ -95,9 +95,8 @@ export async function getAutomationStatus(this: ModuleInstance): Promise<any> {
 			throw new Error(`Failed to fetch automationstatus: ${response.statusText}`)
 		}
 
-		const automationStatus = await response.json()
 		// this.log('info', `AutomationStatus - ${JSON.stringify(automationStatus)}`)
-		return automationStatus
+		return await response.json()
 	} catch (error) {
 		console.error(`Error to fetching automationstatus:`, error)
 		throw error
