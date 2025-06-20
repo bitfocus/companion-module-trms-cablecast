@@ -151,8 +151,8 @@ export function SetEventVariables(self: ModuleInstance): void {
 			selected_event_id: firstEvent.scheduleId.toString(),
 			selected_event_show_title: firstEvent.showTitle || 'No Show Title',
 			selected_event_channel_name: firstEvent.channelName || 'No Channel Name',
-			selected_event_start: firstEvent.runDateTime || 'No Start Time',
-			selected_event_end: firstEvent.endDateTime || 'No End Time',
+			selected_event_start: FormatDateTimeString(firstEvent.runDateTime) || 'No Start Time',
+			selected_event_end: FormatDateTimeString(firstEvent.endDateTime) || 'No End Time',
 		})
 		return
 	}
@@ -160,7 +160,31 @@ export function SetEventVariables(self: ModuleInstance): void {
 	self.setVariableValues({
 		selected_event_show_title: selectedEvent.showTitle || 'No Show Title',
 		selected_event_channel_name: selectedEvent.channelName || 'No Channel Name',
-		selected_event_start: selectedEvent.runDateTime || 'No Start Time',
-		selected_event_end: selectedEvent.endDateTime || 'No End Time',
+		selected_event_start: FormatDateTimeString(selectedEvent.runDateTime) || 'No Start Time',
+		selected_event_end: FormatDateTimeString(selectedEvent.endDateTime) || 'No End Time',
 	})
+}
+
+function FormatDateTimeString(inputDateString?: string) {
+	if (!inputDateString) {
+		return undefined
+	}
+
+	const dateObject = new Date(inputDateString)
+
+	return `${GetMonthAbbreviation(
+		dateObject.getMonth(),
+	)} ${dateObject.getDate()}, ${dateObject.getFullYear()} ${FormatTime(dateObject.getHours(), dateObject.getMinutes())}`
+}
+
+function GetMonthAbbreviation(monthIndex: number): string {
+	const monthsAbbreviations = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	return monthsAbbreviations[monthIndex]
+}
+
+function FormatTime(hours: number, minutes: number): string {
+	const ampm = hours >= 12 ? 'PM' : 'AM'
+	const formattedHours = hours % 12 === 0 ? 12 : hours % 12
+	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
+	return `${formattedHours}:${formattedMinutes} ${ampm}`
 }
