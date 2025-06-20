@@ -4,6 +4,7 @@ export interface ModuleConfig {
 	host: string
 	username: string
 	password: string
+	locationId: string
 }
 
 export function GetConfigFields(): SomeCompanionConfigField[] {
