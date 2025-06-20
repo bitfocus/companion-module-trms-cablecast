@@ -3,7 +3,7 @@
 	"name": "trms-cablecast",
 	"shortname": "Cablecast",
 	"description": "Allows creating actions to control macros",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-trms-cablecast.git",
 	"bugs": "https://github.com/bitfocus/companion-module-trms-cablecast/issues",
