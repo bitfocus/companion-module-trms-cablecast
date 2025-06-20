@@ -2,7 +2,7 @@ import type { ModuleInstance } from './main.js'
 
 export function UpdateActions(self: ModuleInstance): void {
 	self.setActionDefinitions({
-		sample_action: {
+		fire_macro: {
 			name: 'Fire Macro',
 			options: [
 				{
@@ -20,7 +20,14 @@ export function UpdateActions(self: ModuleInstance): void {
 				self.log('info', `Fire macro ${JSON.stringify(event)}`)
 
 				const macroId = event.options.macroId
-				const url = `${self.config.host}/cablecastapi/v1/forceevents/customaction/${macroId}`
+				let url = `${self.config.host}/cablecastapi/v1/forceevents/customaction/${macroId}`
+
+				const selectedEventId = self.getVariableValue('selected_event_id')
+				const selectedEvent = self.upcomingEvents.find((event) => event.scheduleId.toString() === selectedEventId)
+
+				if (selectedEvent) {
+					url += `?eventScheduleId=${selectedEvent.scheduleId}`
+				}
 
 				try {
 					const response = await fetch(url, {
