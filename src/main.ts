@@ -49,7 +49,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				return ca
 			})
 		} catch (e) {
-			console.error('Fetching controlrooms Failed:', e)
+			this.log('error', `Fetching controlrooms failed. Error: ${e}`)
 			return []
 		}
 	}
