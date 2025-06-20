@@ -128,7 +128,7 @@ export async function getAutomationStatus(this: ModuleInstance): Promise<any> {
 	}
 }
 
-function SetEventVariables(self: ModuleInstance): void {
+export function SetEventVariables(self: ModuleInstance): void {
 	if (!self.upcomingEvents || self.upcomingEvents.length === 0) {
 		self.setVariableValues({
 			selected_event_id: '',
