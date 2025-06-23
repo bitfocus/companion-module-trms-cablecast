@@ -2,7 +2,7 @@ import type { ModuleInstance } from './main.js'
 
 export function UpdateActions(self: ModuleInstance): void {
 	self.setActionDefinitions({
-		sample_action: {
+		fire_macro: {
 			name: 'Fire Macro',
 			options: [
 				{
