@@ -103,6 +103,15 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	async getUpcomingEvents(): Promise<Event[]> {
+		const defaultEvents = [
+			{
+				scheduleId: -1,
+				channelId: 0,
+				channelName: '--None--',
+				showTitle: '--None--',
+			},
+		]
+
 		try {
 			const eventsResponse = await fetch(
 				`${this.config.host}/cablecastapi/v1/controlrooms/upcomingevents?location=${this.config.locationId}`,
@@ -113,15 +122,17 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 					},
 				},
 			)
+
 			if (!eventsResponse.ok) {
 				this.log('error', `Error fetching upcoming events: ${eventsResponse.statusText}`)
-				return []
+				return defaultEvents
 			}
+
 			const eventsData = (await eventsResponse.json()) as { events: Event[] }
-			return eventsData.events
+			return [...defaultEvents, ...eventsData.events]
 		} catch (e) {
 			this.log('error', `Fetching upcoming events Failed: ${e}`)
-			return []
+			return defaultEvents
 		}
 	}
 
