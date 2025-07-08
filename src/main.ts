@@ -103,10 +103,10 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	async getUpcomingEvents(): Promise<Event[]> {
-		const defaultEvents = [
+		const defaultEvents: Event[] = [
 			{
+				channelId: -1,
 				scheduleId: -1,
-				channelId: 0,
 				channelName: '--None--',
 				showTitle: '--None--',
 			},
