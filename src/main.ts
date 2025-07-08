@@ -21,10 +21,20 @@ export interface Device {
 	name: string
 }
 
+export interface Event {
+	scheduleId: number
+	runDateTime?: string
+	endDateTime?: string
+	channelId: number
+	channelName?: string
+	showTitle?: string
+}
+
 export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	controlRooms: ControlRoom[] = []
 	macros: Macro[] = []
 	devices: Device[] = []
+	upcomingEvents: Event[] = []
 	timeout: NodeJS.Timeout | null = null // For polling
 	config!: ModuleConfig // Setup in init()
 
@@ -45,9 +55,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				return []
 			}
 			const controlRoomsData = (await controlRoomsResponse.json()) as { controlRooms: ControlRoom[] }
-			return controlRoomsData.controlRooms.map((ca: { id: string; name: string }) => {
-				return ca
-			})
+			return controlRoomsData.controlRooms
 		} catch (e) {
 			this.log('error', `Fetching controlrooms failed. Error: ${e}`)
 			return []
@@ -67,9 +75,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				return []
 			}
 			const macrosData = (await macrosResponse.json()) as { macros: Macro[] }
-			return macrosData.macros.map((m: { id: string; name: string; controlRoom: number }) => {
-				return m
-			})
+			return macrosData.macros
 		} catch (e) {
 			this.log('error', `Fetching macros Failed: ${e}`)
 			return []
@@ -89,12 +95,32 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				return []
 			}
 			const devicesData = (await devicesResponse.json()) as { devices: Device[] }
-
-			return devicesData.devices.map((d: { id: string; name: string }) => {
-				return d
-			})
+			return devicesData.devices
 		} catch (e) {
 			this.log('error', `Fetching devices Failed: ${e}`)
+			return []
+		}
+	}
+
+	async getUpcomingEvents(): Promise<Event[]> {
+		try {
+			const eventsResponse = await fetch(
+				`${this.config.host}/cablecastapi/v1/controlrooms/upcomingevents?location=${this.config.locationId}`,
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
+					},
+				},
+			)
+			if (!eventsResponse.ok) {
+				this.log('error', `Error fetching upcoming events: ${eventsResponse.statusText}`)
+				return []
+			}
+			const eventsData = (await eventsResponse.json()) as { events: Event[] }
+			return eventsData.events
+		} catch (e) {
+			this.log('error', `Fetching upcoming events Failed: ${e}`)
 			return []
 		}
 	}
@@ -134,6 +160,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				.sort((a, b) => a.name.localeCompare(b.name))
 
 			this.devices = await this.getDevices()
+			await this.updateEvents()
 
 			this.updateActions() // export actions
 			this.updateFeedbacks() // export feedbacks
@@ -173,6 +200,16 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		UpdateFeedbacks(this)
 	}
 
+	async updateEvents(): Promise<void> {
+		try {
+			const events = await this.getUpcomingEvents()
+			this.upcomingEvents = events
+			this.log('info', `Upcoming Events: ${JSON.stringify(events)}`)
+		} catch (e) {
+			this.log('error', `Error updating events: ${e}`)
+		}
+	}
+
 	async updateVariables(): Promise<void> {
 		try {
 			return UpdateVariables(this)
@@ -182,7 +219,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	pollVariables(): void {
-		this.updateVariables()
+		this.asyncPollVariables()
 			.then(() => {
 				this.log('info', 'Variables updated')
 			})
@@ -194,6 +231,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 					this.pollVariables()
 				}, 1000)
 			})
+	}
+
+	async asyncPollVariables(): Promise<void> {
+		await this.updateEvents()
+		await this.updateVariables()
 	}
 }
 
