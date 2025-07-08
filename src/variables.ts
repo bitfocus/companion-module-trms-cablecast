@@ -109,13 +109,19 @@ export async function UpdateVariables(self: ModuleInstance): Promise<void> {
 
 export async function getAutomationStatus(this: ModuleInstance): Promise<any> {
 	try {
-		this.log('info', `Callng Automation Status URL: ${this.config.host}/cablecastapi/v1/automationstatus/?location=1`)
-		const response = await fetch(`${this.config.host}/cablecastapi/v1/automationstatus/?location=1`, {
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
+		this.log(
+			'info',
+			`Callng Automation Status URL: ${this.config.host}/cablecastapi/v1/automationstatus/?location=${this.config.locationId}`,
+		)
+		const response = await fetch(
+			`${this.config.host}/cablecastapi/v1/automationstatus/?location=${this.config.locationId}`,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
+				},
 			},
-		})
+		)
 		if (!response.ok) {
 			throw new Error(`Failed to fetch automationstatus: ${response.statusText}`)
 		}
