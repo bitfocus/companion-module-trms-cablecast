@@ -55,7 +55,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			name: 'Next Event',
 			options: [],
 			callback: async () => {
-				self.log('info', 'Next Event action triggered')
+				self.log('info', `Next Event action triggered:  ${self.upcomingEvents.length}`)
 
 				if (self.upcomingEvents.length === 0) {
 					self.log('warn', 'No upcoming events found')
@@ -63,12 +63,8 @@ export function UpdateActions(self: ModuleInstance): void {
 				}
 
 				const selectedEventId = self.getVariableValue('selected_event_id')
-				let selectedEventIndex
-				self.upcomingEvents.find((event, index) => {
-					if (event.scheduleId.toString() === selectedEventId) {
-						selectedEventIndex = index
-					}
-					return true
+				const selectedEventIndex = self.upcomingEvents.findIndex((event) => {
+					return event.scheduleId.toString() === selectedEventId?.toString()
 				})
 
 				let nextEvent
@@ -76,6 +72,7 @@ export function UpdateActions(self: ModuleInstance): void {
 					self.log('warn', `Selected event with ID ${selectedEventId} not found in upcoming events`)
 					nextEvent = self.upcomingEvents[0]
 				} else {
+					self.log('info', `Selected event index: ${selectedEventIndex}`)
 					nextEvent = self.upcomingEvents[selectedEventIndex + 1] || self.upcomingEvents[0]
 				}
 
@@ -85,7 +82,7 @@ export function UpdateActions(self: ModuleInstance): void {
 
 				SetEventVariables(self)
 
-				self.log('info', `Next event set to ${nextEvent.showTitle}`)
+				self.log('info', `Next event set to ${nextEvent.showTitle} - ${selectedEventIndex}`)
 			},
 		},
 		previous_event: {
@@ -100,24 +97,16 @@ export function UpdateActions(self: ModuleInstance): void {
 				}
 
 				const selectedEventId = self.getVariableValue('selected_event_id')
-				let selectedEventIndex
-				self.upcomingEvents.find((event, index) => {
-					if (event.scheduleId.toString() === selectedEventId) {
-						selectedEventIndex = index
-					}
-					return true
-				})
+				const selectedEventIndex = self.upcomingEvents.findIndex(
+					(event) => event.scheduleId.toString() === selectedEventId?.toString(),
+				)
 
-				let previousEvent
-				if (selectedEventIndex === undefined) {
-					self.log('warn', `Selected event with ID ${selectedEventId} not found or is the first event`)
-					previousEvent = self.upcomingEvents[0]
-				} else {
-					previousEvent =
-						selectedEventIndex == 0
-							? self.upcomingEvents[self.upcomingEvents.length - 1]
-							: selectedEventIndex[selectedEventIndex - 1]
-				}
+				const prevIndex =
+					selectedEventIndex === -1
+						? 0
+						: (selectedEventIndex - 1 + self.upcomingEvents.length) % self.upcomingEvents.length
+
+				const previousEvent = self.upcomingEvents[prevIndex]
 
 				self.setVariableValues({
 					selected_event_id: previousEvent.scheduleId.toString(),
