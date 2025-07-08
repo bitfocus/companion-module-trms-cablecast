@@ -26,7 +26,7 @@ export function UpdateActions(self: ModuleInstance): void {
 				const selectedEventId = self.getVariableValue('selected_event_id')
 				const selectedEvent = self.upcomingEvents.find((event) => event.scheduleId.toString() === selectedEventId)
 
-				if (selectedEvent) {
+				if (selectedEvent && selectedEvent.scheduleId !== -1) {
 					url += `?eventScheduleId=${selectedEvent.scheduleId}`
 				}
 
