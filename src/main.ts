@@ -146,7 +146,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	async reload(): Promise<void> {
-		this.timeout?.close()
+		// Clear any pending poll to avoid double scheduling
+		if (this.timeout) {
+			clearTimeout(this.timeout)
+			this.timeout = null
+		}
 
 		if (!this.config.host || !this.config.username || !this.config.password) {
 			this.log('warn', 'Module not configured')
@@ -173,13 +177,12 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			this.devices = await this.getDevices()
 			await this.updateEvents()
 
-			this.updateActions() // export actions
-			this.updateFeedbacks() // export feedbacks
-			await this.updateVariables() // initialize variables
+			this.updateActions()
+			this.updateFeedbacks()
+			await this.updateVariables()
 
-			this.timeout = setTimeout(() => {
-				this.pollVariables()
-			}, 1000)
+			// Kick off the polling loop; it will self-schedule 1s AFTER each run completes
+			this.pollVariables()
 
 			this.updateStatus(InstanceStatus.Ok)
 		} catch (error) {
@@ -191,6 +194,10 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	// When module gets deleted
 	async destroy(): Promise<void> {
 		this.log('debug', 'destroy')
+		if (this.timeout) {
+			clearTimeout(this.timeout)
+			this.timeout = null
+		}
 	}
 
 	async configUpdated(config: ModuleConfig): Promise<void> {
@@ -230,6 +237,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	pollVariables(): void {
+		// Run the async work; schedule next poll 1s AFTER it completes (success or error)
 		this.asyncPollVariables()
 			.then(() => {
 				this.log('info', 'Variables updated')
@@ -238,9 +246,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				this.log('error', `Error updating variables: ${error}`)
 			})
 			.finally(() => {
-				this.timeout = setTimeout(() => {
-					this.pollVariables()
-				}, 1000)
+				// Clear any existing timer defensively, then schedule the next run
+				if (this.timeout) {
+					clearTimeout(this.timeout)
+				}
+				this.timeout = setTimeout(() => this.pollVariables(), 1000)
 			})
 	}
 
