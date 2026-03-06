@@ -36,10 +36,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			try {
 				const response = await fetch(url, {
 					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Basic ${Buffer.from(`${self.config.username}:${self.config.password}`).toString('base64')}`,
-					},
+					headers: self.authHeaders(),
 				})
 				if (!response.ok) {
 					self.log('error', `CustomAction POST failed: ${response.statusText}`)
@@ -128,7 +125,9 @@ export function UpdateActions(self: ModuleInstance): void {
 
 	// ── Stop ──
 
-	const allDevices = self.getDeviceChoices()
+	const allDevices = self.devices
+		.filter((d) => d.active && d.primitiveDevice !== PrimitiveDevice.CG)
+		.map((d) => ({ id: d.id, label: d.name }))
 
 	if (allDevices.length > 0) {
 		actions['stop'] = {

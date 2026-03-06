@@ -230,7 +230,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 	// ── Auth Header Helper ──
 
-	private authHeaders(): Record<string, string> {
+	authHeaders(): Record<string, string> {
 		return {
 			'Content-Type': 'application/json',
 			Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
@@ -390,10 +390,6 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 	getDeviceName(id: number): string {
 		return this.devices.find((d) => d.id === id)?.name ?? `Device ${id}`
-	}
-
-	getOutputName(id: number): string {
-		return this.outputs.find((o) => o.id === id)?.name ?? `Output ${id}`
 	}
 
 	// ── Lifecycle ──

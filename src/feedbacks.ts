@@ -97,7 +97,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 
 	// ── passthrough_active: Device is in passthrough ──
 
-	if (allDevices.length > 0) {
+	const passthroughDevices = self.getPassthroughDeviceChoices()
+
+	if (passthroughDevices.length > 0) {
 		feedbacks['passthrough_active'] = {
 			type: 'boolean',
 			name: 'Passthrough Active',
@@ -111,8 +113,8 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					id: 'device',
 					type: 'dropdown',
 					label: 'Device',
-					default: allDevices[0]?.id ?? 0,
-					choices: allDevices,
+					default: passthroughDevices[0]?.id ?? 0,
+					choices: passthroughDevices,
 				},
 			],
 			callback: (feedback) => {
@@ -188,7 +190,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 
 	// ── caption_active: Device is transcribing ──
 
-	if (allDevices.length > 0) {
+	const transcriptionDevices = self.getTranscriptionDeviceChoices()
+
+	if (transcriptionDevices.length > 0) {
 		feedbacks['caption_active'] = {
 			type: 'boolean',
 			name: 'Caption Active',
@@ -202,8 +206,8 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					id: 'device',
 					type: 'dropdown',
 					label: 'Device',
-					default: allDevices[0]?.id ?? 0,
-					choices: allDevices,
+					default: transcriptionDevices[0]?.id ?? 0,
+					choices: transcriptionDevices,
 				},
 			],
 			callback: (feedback) => {
@@ -216,7 +220,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 
 	// ── rtmp_streaming: Device has active RTMP output ──
 
-	if (allDevices.length > 0) {
+	const rtmpDevices = self.getRtmpCapableDeviceChoices()
+
+	if (rtmpDevices.length > 0) {
 		feedbacks['rtmp_streaming'] = {
 			type: 'boolean',
 			name: 'RTMP Streaming',
@@ -230,8 +236,8 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					id: 'device',
 					type: 'dropdown',
 					label: 'Device',
-					default: allDevices[0]?.id ?? 0,
-					choices: allDevices,
+					default: rtmpDevices[0]?.id ?? 0,
+					choices: rtmpDevices,
 				},
 			],
 			callback: (feedback) => {
@@ -244,7 +250,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 
 	// ── encoder_video_present: Encoder has video signal ──
 
-	if (allDevices.length > 0) {
+	const encoderDevices = self.getRtmpCapableDeviceChoices()
+
+	if (encoderDevices.length > 0) {
 		feedbacks['encoder_video_present'] = {
 			type: 'boolean',
 			name: 'Encoder Video Present',
@@ -258,8 +266,8 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					id: 'device',
 					type: 'dropdown',
 					label: 'Device',
-					default: allDevices[0]?.id ?? 0,
-					choices: allDevices,
+					default: encoderDevices[0]?.id ?? 0,
+					choices: encoderDevices,
 				},
 			],
 			callback: (feedback) => {
