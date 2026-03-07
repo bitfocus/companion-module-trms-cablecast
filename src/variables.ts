@@ -23,6 +23,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 			// Existing
 			{ name: `Device State: ${n}`, variableId: `device_state_${id}` },
 			{ name: `Device Position: ${n}`, variableId: `device_position_${id}` },
+			{ name: `Device Position Timecode: ${n}`, variableId: `device_position_timecode_${id}` },
 			{ name: `Device Position Hours: ${n}`, variableId: `device_position_hours_${id}` },
 			{ name: `Device Position Minutes: ${n}`, variableId: `device_position_minutes_${id}` },
 			{ name: `Device Position Seconds: ${n}`, variableId: `device_position_seconds_${id}` },
@@ -124,6 +125,7 @@ export async function UpdateVariableValues(self: ModuleInstance): Promise<void> 
 			seconds = (totalSeconds % 60).toString().padStart(2, '0')
 		}
 		vals[`device_position_${id}`] = positionInFrames ?? 'None'
+		vals[`device_position_timecode_${id}`] = hours === 'None' ? 'None' : `${hours}:${minutes}:${seconds}`
 		vals[`device_position_hours_${id}`] = hours
 		vals[`device_position_minutes_${id}`] = minutes
 		vals[`device_position_seconds_${id}`] = seconds

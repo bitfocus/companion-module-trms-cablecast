@@ -20,7 +20,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			category: `Device: ${name}`,
 			name: `${name} Status`,
 			style: {
-				text: `${name}\\n$(cablecast:device_state_${id})\\n$(cablecast:device_position_hours_${id}):$(cablecast:device_position_minutes_${id}):$(cablecast:device_position_seconds_${id})`,
+				text: `${name}\\n$(cablecast:device_state_${id})\\n$(cablecast:device_position_timecode_${id})`,
 				size: 'auto',
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
@@ -65,7 +65,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				feedbacks: [
 					{
 						feedbackId: 'device_state',
-						options: { device: id, state: 'Play' },
+						options: { device: id, state: 'play' },
 						style: { bgcolor: combineRgb(0, 204, 0), color: combineRgb(0, 0, 0) },
 					},
 				],
@@ -91,7 +91,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				feedbacks: [
 					{
 						feedbackId: 'device_state',
-						options: { device: id, state: 'Pause' },
+						options: { device: id, state: 'pause' },
 						style: { bgcolor: combineRgb(204, 204, 0), color: combineRgb(0, 0, 0) },
 					},
 				],
@@ -119,7 +119,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				feedbacks: [
 					{
 						feedbackId: 'device_state',
-						options: { device: id, state: 'Stop' },
+						options: { device: id, state: 'stop' },
 						style: { bgcolor: combineRgb(51, 51, 51) },
 					},
 				],
@@ -155,7 +155,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				feedbacks: [
 					{
 						feedbackId: 'device_state',
-						options: { device: id, state: 'Record' },
+						options: { device: id, state: 'record' },
 						style: { bgcolor: combineRgb(204, 0, 0), color: combineRgb(255, 255, 255) },
 					},
 				],
@@ -364,7 +364,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				feedbacks: [
 					{
 						feedbackId: 'device_state',
-						options: { device: id, state: 'PlayStream' },
+						options: { device: id, state: 'playStream' },
 						style: { bgcolor: combineRgb(0, 204, 0), color: combineRgb(0, 0, 0) },
 					},
 				],

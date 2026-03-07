@@ -495,7 +495,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 	async updateVariableValues(): Promise<void> {
 		try {
-			return UpdateVariableValues(this)
+			await UpdateVariableValues(this)
 		} catch (e) {
 			this.log('error', `Error updating variables: ${e}`)
 		}
@@ -519,11 +519,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		await this.updateEvents()
 		this.automationStatus = await this.getAutomationStatus()
 		await this.updateVariableValues()
-		this.checkFeedbacks()
+		this.checkAllFeedbacks()
 	}
 
-	checkFeedbacks(): void {
-		this.checkFeedbacksById(
+	checkAllFeedbacks(): void {
+		this.checkFeedbacks(
 			'device_state',
 			'device_error',
 			'passthrough_active',
