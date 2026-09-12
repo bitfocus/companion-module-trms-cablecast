@@ -5,6 +5,7 @@ export interface ModuleConfig {
 	username: string
 	password: string
 	locationId: string
+	pollInterval: number
 }
 
 export function GetConfigFields(): SomeCompanionConfigField[] {
@@ -36,6 +37,18 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			label: 'Location ID',
 			width: 8,
 			regex: Regex.SOMETHING,
+		},
+		{
+			type: 'dropdown',
+			id: 'pollInterval',
+			label: 'Status Poll Interval',
+			width: 4,
+			default: 1000,
+			choices: [
+				{ id: 250, label: '250ms' },
+				{ id: 500, label: '500ms' },
+				{ id: 1000, label: '1000ms' },
+			],
 		},
 	]
 }

@@ -2,7 +2,7 @@
 	"id": "trms-cablecast",
 	"name": "trms-cablecast",
 	"shortname": "Cablecast",
-	"description": "Allows creating actions to control macros",
+	"description": "Control Cablecast automation: device actions, switching, overrides, macros, and status monitoring",
 	"version": "0.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-trms-cablecast.git",
